@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'LABEL2' }
+    agent { label 'LABEL1' }
     triggers { pollSCM ('* * * * *') }
     parameters {
         choice(name: 'MAVEN_GOAL', choices: ['package', 'install', 'clean'], description: 'Maven Goal')
@@ -17,7 +17,7 @@ pipeline {
                 rtServer (
                     id: "JFROG",
                     url: 'https://msindian123.jfrog.io/',
-                    credentialsId: 'JFROG-CRED'
+                    credentialsId: 'JFROG'
                 )
 
                 rtMavenDeployer (
