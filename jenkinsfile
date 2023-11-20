@@ -14,21 +14,21 @@ pipeline {
         stage ('Artifactory configuration') {
             steps {
                 rtServer (
-                    id: "ARTIFACTORY_SERVER",
-                    url: 'https://qtkhajamarch23.jfrog.io/artifactory',
-                    credentialsId: 'JFROG_CLOUD_ADMIN'
+                    id: "JFROG",
+                    url: 'https://msindian123.jfrog.io/artifactory',
+                    credentialsId: 'JFROG-CRED'
                 )
 
                 rtMavenDeployer (
                     id: "MAVEN_DEPLOYER",
-                    serverId: "ARTIFACTORY_SERVER",
+                    serverId: "JFROG",
                     releaseRepo: 'libs-release',
                     snapshotRepo: 'libs-snapshot'
                 )
 
                 rtMavenResolver (
                     id: "MAVEN_RESOLVER",
-                    serverId: "ARTIFACTORY_SERVER",
+                    serverId: "JFROG",
                     releaseRepo: 'libs-release',
                     snapshotRepo: 'libs-snapshot'
                 )
@@ -47,7 +47,7 @@ pipeline {
 
                 )
                 rtPublishBuildInfo (
-                    serverId: "ARTIFACTORY_SERVER"
+                    serverId: "JFROG"
                 )
                 //sh "mvn ${params.MAVEN_GOAL}"
             }
