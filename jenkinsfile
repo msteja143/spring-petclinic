@@ -8,8 +8,8 @@ pipeline {
         stage('vcs') {
             steps {
                 git url: 'https://github.com/msteja143/spring-petclinic.git',
-                    branch: 'artifact'
-                    credentialsId: 'GIT'
+                branch: 'artifact'
+                credentialsId: 'GIT'
             }
         }
         stage ('Artifactory configuration') {
