@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'LABEL4' }
+    agent { label 'LABEL2' }
     triggers { pollSCM ('* * * * *') }
     parameters {
         choice(name: 'MAVEN_GOAL', choices: ['package', 'install', 'clean'], description: 'Maven Goal')
@@ -8,31 +8,7 @@ pipeline {
         stage('vcs') {
             steps {
                 git url: 'https://github.com/msteja143/spring-petclinic.git',
-                    branch: 'artifact',
-                    credentialsId: 'GIT'
-            }
-        }
-        stage ('Artifactory configuration') {
-            steps {
-                rtServer (
-                    id: "JFROG",
-                    url: 'https://msindian123.jfrog.io/',
-                    credentialsId: 'JFROG'
-                )
-
-                rtMavenDeployer (
-                    id: "MAVEN_DEPLOYER",
-                    serverId: "JFROG",
-                    releaseRepo: 'libs-release',
-                    snapshotRepo: 'libs-snapshot'
-                )
-
-                rtMavenResolver (
-                    id: "MAVEN_RESOLVER",
-                    serverId: "JFROG",
-                    releaseRepo: 'libs-release',
-                    snapshotRepo: 'libs-snapshot'
-                )
+                    branch: 'stash'
             }
         }
         stage('package') {
@@ -40,24 +16,14 @@ pipeline {
                 jdk 'JDK-17'
             }
             steps {
-                rtMavenRun (
-                    tool: 'MAVEN_DEFAULT',
-                    pom: 'pom.xml',
-                    goals: 'clean install',
-                    deployerId: "MAVEN_DEPLOYER"
-
-                )
-                rtPublishBuildInfo (
-                    serverId: "JFROG"
-                )
-                //sh "mvn ${params.MAVEN_GOAL}"
+                sh "mvn ${params.MAVEN_GOAL}"
             }
         }
         stage('sonar analysis') {
             steps {
                 // performing sonarqube analysis with "withSonarQubeENV(<Name of Server configured in Jenkins>)"
                 withSonarQubeEnv('SONARCUBE') {
-                    sh 'mvn clean package sonar:sonar -Dsonar.organization=springpetclinic1'
+                    sh 'mvn clean sonar:sonar -Dsonar.organization=msteja143'
                 }
             }
         }
@@ -66,7 +32,16 @@ pipeline {
                 archiveArtifacts artifacts: '**/target/spring-petclinic-3.0.0-SNAPSHOT.jar',
                                  onlyIfSuccessful: true
                 junit testResults: '**/surefire-reports/TEST-*.xml'
+                stash name : 'spc-jar',
+                includes:'**/target/spring-petclinic-3.0.0-SNAPSHOT.jar'
             }
-        }
+     
+       }
+       stage ('ansible'){
+          agent{label 'LABEL5'}
+          steps{
+            unstash name : 'spc-jar'
+          }
+       }
     }
 }
