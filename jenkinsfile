@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'LABEL3' }
+    agent { label 'LABEL1' }
     triggers { pollSCM ('* * * * *') }
     parameters {
         choice(name: 'MAVEN_GOAL', choices: ['package', 'install', 'clean'], description: 'Maven Goal')
@@ -23,7 +23,7 @@ pipeline {
             steps {
                 // performing sonarqube analysis with "withSonarQubeENV(<Name of Server configured in Jenkins>)"
                 withSonarQubeEnv('SONARCUBE') {
-                    sh 'mvn clean sonar:sonar -Dsonar.organization=msteja143'
+                    sh 'mvn clean sonar:sonar -Dsonar.organization=springpetclinic1'
                 }
             }
         }
