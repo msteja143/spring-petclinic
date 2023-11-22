@@ -23,7 +23,7 @@ pipeline {
             steps {
                 // performing sonarqube analysis with "withSonarQubeENV(<Name of Server configured in Jenkins>)"
                 withSonarQubeEnv('SONARCUBE') {
-                     sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.7.0.1746:sonar'
+                    sh 'mvn clean package sonar:sonar -Dsonar.organization=springpetclinic1'
                 }
             }
         }
